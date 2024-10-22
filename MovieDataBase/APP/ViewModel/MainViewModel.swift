@@ -22,9 +22,13 @@ class MainViewModel: ObservableObject {
     }
 
     private func loadMovies() {
-        if let loadedMovies = MovieDatabase.shared.movies {
-            self.movies = loadedMovies
-            updateFilters()
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            if let loadedMovies = MovieDatabase.shared.movies {
+                DispatchQueue.main.async {
+                    self?.movies = loadedMovies
+                    self?.updateFilters()
+                }
+            }
         }
     }
 
