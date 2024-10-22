@@ -41,13 +41,24 @@ struct MovieDatabaseView: View {
                         ForEach(filteredMovies, id: \.imdbID) { movie in
                             NavigationLink(destination: MovieDetailView(movie: movie)) {
                                 HStack {
-                                    AsyncImage(url: URL(string: movie.poster)) { image in
-                                        image
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 50, height: 75)
-                                    } placeholder: {
-                                        ProgressView()
+                                    AsyncImage(url: URL(string: movie.poster)) { phase in
+                                        switch phase {
+                                        case .empty:
+                                            ProgressView()
+                                                .frame(width: 70, height: 100)
+                                        case .success(let image):
+                                            image
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: 70, height: 100)
+                                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        case .failure:
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(Color.gray.opacity(0.3))
+                                                .frame(width: 70, height: 100)
+                                        @unknown default:
+                                            EmptyView()
+                                        }
                                     }
                                     
                                     VStack(alignment: .leading) {
