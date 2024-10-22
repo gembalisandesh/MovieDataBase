@@ -39,7 +39,8 @@ class MainViewModel: ObservableObject {
         let searchLowercased = searchTerm.lowercased()
 
         return movies.filter { movie in
-            let yearMatches = movie.year.lowercased() == searchLowercased
+            let yearMatches = movie.year.lowercased() == searchLowercased ||
+                              movie.year.lowercased().hasPrefix(searchLowercased)
             let genreMatches = movie.genre.lowercased().localizedCaseInsensitiveContains(searchLowercased)
             let directorMatches = movie.director.lowercased().localizedCaseInsensitiveContains(searchLowercased)
             let actorMatches = movie.actors.lowercased().localizedCaseInsensitiveContains(searchLowercased)

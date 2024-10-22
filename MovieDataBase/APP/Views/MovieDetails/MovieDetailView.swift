@@ -18,7 +18,7 @@ struct MovieDetailView: View {
                     AsyncImage(url: URL(string: movie.poster)) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
+                            .aspectRatio(contentMode: .fit)
                             .frame(height: 400)
                             .clipped()
                     } placeholder: {
