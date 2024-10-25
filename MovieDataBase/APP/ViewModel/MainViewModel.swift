@@ -40,17 +40,29 @@ class MainViewModel: ObservableObject {
     }
     
     func getMoviesBySearch(searchTerm: String) -> [Movie] {
-        let searchLowercased = searchTerm.lowercased()
-
+        guard !searchTerm.isEmpty else { return movies }
+        
+        let searchTerms = searchTerm.lowercased().split(separator: " ")
+        
         return movies.filter { movie in
-            let yearMatches = movie.year.lowercased() == searchLowercased ||
-                              movie.year.lowercased().hasPrefix(searchLowercased)
-            let genreMatches = movie.genre.lowercased().localizedCaseInsensitiveContains(searchLowercased)
-            let directorMatches = movie.director.lowercased().localizedCaseInsensitiveContains(searchLowercased)
-            let actorMatches = movie.actors.lowercased().localizedCaseInsensitiveContains(searchLowercased)
-            let titleMatches = movie.title.lowercased().localizedCaseInsensitiveContains(searchLowercased)
-            
-            return yearMatches || genreMatches || directorMatches || actorMatches || titleMatches
+            searchTerms.allSatisfy { term in
+                let searchTerm = String(term)
+                
+                let yearMatches = movie.year.lowercased() == searchTerm ||
+                    movie.year.lowercased().hasPrefix(searchTerm)
+                
+                let genres = movie.genre.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces).lowercased() }
+                let genreMatches = genres.contains { $0.contains(searchTerm) }
+                
+                let directorMatches = movie.director.lowercased().contains(searchTerm)
+                
+                let actors = movie.actors.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces).lowercased() }
+                let actorMatches = actors.contains { $0.contains(searchTerm) }
+                
+                let titleMatches = movie.title.lowercased().contains(searchTerm)
+                
+                return yearMatches || genreMatches || directorMatches || actorMatches || titleMatches
+            }
         }
     }
 
