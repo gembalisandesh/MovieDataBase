@@ -35,7 +35,7 @@ class MainViewModel: ObservableObject {
     private func updateFilters() {
         years = Array(Set(movies.map { $0.year })).sorted()
         genres = Array(Set(movies.flatMap { $0.genre.components(separatedBy: ", ") })).sorted()
-        directors = Array(Set(movies.map { $0.director })).sorted()
+        directors = Array(Set(movies.flatMap { $0.director.components(separatedBy: ", ") })).sorted()
         actors = Array(Set(movies.flatMap { $0.actors.components(separatedBy: ", ") })).sorted()
     }
     
