@@ -81,4 +81,9 @@ enum DVD: String, Codable {
     case the30Jan2007 = "30 Jan 2007"
 }
 
-
+enum SortOrder {
+    case titleAscending
+    case titleDescending
+    case yearAscending
+    case yearDescending
+}

@@ -14,25 +14,10 @@ struct MovieCardView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
     
-            AsyncImage(url: URL(string: moviePoster)) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                        .frame(width: 100, height: 150)
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 100, height: 150)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                case .failure:
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(width: 100, height: 150)
-                @unknown default:
-                    EmptyView()
-                }
-            }
+            AsyncImageView(url: moviePoster) // Loads poster image asynchronously
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 100, height: 150)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(movieTitle)
@@ -66,9 +51,9 @@ struct MovieCardView: View {
         .frame(maxWidth: .infinity)
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 12) // Background shape
                 .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2) // Shadow for depth
         )
     }
 }

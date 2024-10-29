@@ -14,25 +14,21 @@ struct MovieDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
+                // Header section with movie poster and title
                 ZStack(alignment: .bottom) {
-                    AsyncImage(url: URL(string: movie.poster)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 400)
-                            .clipped()
-                    } placeholder: {
-                        ProgressView()
-                            .frame(height: 400)
-                    }
+                    AsyncImageView(url: movie.poster) // Asynchronous loading of the movie poster
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 400)
                     
+                    // Gradient overlay for title visibility
                     LinearGradient(
-                        gradient: Gradient(colors: [.clear, .black.opacity(0.7)]),
+                        gradient: Gradient(colors: [.clear, .black.opacity(0.5)]),
                         startPoint: .top,
                         endPoint: .bottom
                     )
                     .frame(height: 200)
                     
+                    // Movie title and year display
                     VStack(alignment: .leading, spacing: 4) {
                         Text(movie.title)
                             .font(.system(size: 32, weight: .bold))
@@ -47,6 +43,7 @@ struct MovieDetailView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
+                // Ratings section
                 VStack(spacing: 16) {
                     Picker("Rating Source", selection: $selectedRatingSource) {
                         Text("IMDB").tag(Source.internetMovieDatabase)
@@ -56,8 +53,9 @@ struct MovieDetailView: View {
                     .pickerStyle(SegmentedPickerStyle())
                     .padding(.horizontal)
                     
+                    // Display the selected rating
                     if let rating = movie.ratings.first(where: { $0.source == selectedRatingSource }) {
-                        RatingDisplayView(rating: rating)
+                        RatingDisplayView(rating: rating) // Custom view to show the rating
                             .padding(.bottom)
                     }
                 }
@@ -65,6 +63,7 @@ struct MovieDetailView: View {
                 .background(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.1), radius: 1)
                 
+                // Sections for detailed movie information
                 VStack(spacing: 24) {
                     ContentSection(title: "Plot") {
                         Text(movie.plot)
@@ -73,12 +72,14 @@ struct MovieDetailView: View {
                     }
                     
                     ContentSection(title: "Credits") {
+                        // Displaying director, cast, and writer information
                         InfoRow(title: "Director", content: movie.director)
                         InfoRow(title: "Cast", content: movie.actors)
                         InfoRow(title: "Writer", content: movie.writer)
                     }
                     
                     ContentSection(title: "Details") {
+                        // Displaying various movie details
                         InfoRow(title: "Released", content: movie.released)
                         InfoRow(title: "Genre", content: movie.genre)
                         InfoRow(title: "Runtime", content: movie.runtime)
@@ -87,6 +88,7 @@ struct MovieDetailView: View {
                     }
                     
                     ContentSection(title: "Recognition") {
+                        // Awards and box office information
                         InfoRow(title: "Awards", content: movie.awards)
                         if let boxOffice = movie.boxOffice {
                             InfoRow(title: "Box Office", content: boxOffice)

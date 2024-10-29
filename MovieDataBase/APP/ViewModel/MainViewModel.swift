@@ -9,11 +9,11 @@ import Foundation
 import Combine
 
 class MainViewModel: ObservableObject {
-    @Published var movies: [Movie] = []
-    @Published var years: [String] = []
-    @Published var genres: [String] = []
-    @Published var directors: [String] = []
-    @Published var actors: [String] = []
+    @Published var movies: [Movie] = []           // Stores all movies to display
+    @Published var years: [String] = []           // Unique years for filtering
+    @Published var genres: [String] = []          // Unique genres for filtering
+    @Published var directors: [String] = []       // Unique directors for filtering
+    @Published var actors: [String] = []          // Unique actors for filtering
     
     private var cancellables = Set<AnyCancellable>()
 
@@ -22,17 +22,19 @@ class MainViewModel: ObservableObject {
     }
 
     private func loadMovies() {
+        // Loads movies asynchronously to avoid blocking the main thread
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             if let loadedMovies = MovieDatabase.shared.movies {
                 DispatchQueue.main.async {
                     self?.movies = loadedMovies
-                    self?.updateFilters()
+                    self?.updateFilters() // Updates filter options based on loaded movies
                 }
             }
         }
     }
 
     private func updateFilters() {
+        // Extracts unique years, genres, directors, and actors from the movies list
         years = Array(Set(movies.map { $0.year })).sorted()
         genres = Array(Set(movies.flatMap { $0.genre.components(separatedBy: ", ") })).sorted()
         directors = Array(Set(movies.flatMap { $0.director.components(separatedBy: ", ") })).sorted()
@@ -40,6 +42,7 @@ class MainViewModel: ObservableObject {
     }
     
     func getMoviesBySearch(searchTerm: String) -> [Movie] {
+        // Filters movies based on the search term across multiple attributes
         guard !searchTerm.isEmpty else { return movies }
         
         let searchTerms = searchTerm.lowercased().split(separator: " ")
@@ -48,6 +51,7 @@ class MainViewModel: ObservableObject {
             searchTerms.allSatisfy { term in
                 let searchTerm = String(term)
                 
+                // Match checks against movie year, genre, director, actors, and title
                 let yearMatches = movie.year.lowercased() == searchTerm ||
                     movie.year.lowercased().hasPrefix(searchTerm)
                 
@@ -65,5 +69,4 @@ class MainViewModel: ObservableObject {
             }
         }
     }
-
 }
