@@ -11,12 +11,15 @@ class MovieDatabase {
     static let shared = MovieDatabase()   // Singleton instance for global access
     
     private(set) var movies: [Movie]?     // Read-only array of movies
+    var isTesting: Bool = false // New property to control testing behavior
     
     private init() {
         loadMovies()   // Loads movies on initialization
     }
     
-    private func loadMovies() {
+    func loadMovies() {
+        guard !isTesting else { return } // Skip loading real data in tests
+        
         // Loads and decodes movies from a local JSON file
         guard let url = Bundle.main.url(forResource: "movies", withExtension: "json") else {
             print("Could not find movies.json file.")
@@ -30,5 +33,9 @@ class MovieDatabase {
         } catch {
             print("Error loading or decoding JSON: \(error)")
         }
+    }
+    
+    func setMovies(forTesting movies: [Movie]) {
+        self.movies = movies
     }
 }

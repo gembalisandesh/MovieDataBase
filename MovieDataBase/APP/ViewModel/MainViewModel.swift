@@ -21,7 +21,7 @@ class MainViewModel: ObservableObject {
         loadMovies()
     }
 
-    private func loadMovies() {
+    func loadMovies() {
         // Loads movies asynchronously to avoid blocking the main thread
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             if let loadedMovies = MovieDatabase.shared.movies {
@@ -33,7 +33,7 @@ class MainViewModel: ObservableObject {
         }
     }
 
-    private func updateFilters() {
+    func updateFilters() {
         // Extracts unique years, genres, directors, and actors from the movies list
         years = Array(Set(movies.map { $0.year })).sorted()
         genres = Array(Set(movies.flatMap { $0.genre.components(separatedBy: ", ") })).sorted()

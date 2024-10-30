@@ -6,19 +6,22 @@
 //
 
 import SwiftUI
+
 struct SelectedMoviesView: View {
-    let movies: [Movie]
-    @State private var sortedMovies: [Movie] = []
-    @State private var sortOrder: SortOrder = .titleAscending
-    @State private var showSortOptions = false
-    
+    @StateObject private var viewModel: SelectedMoviesViewModel
+
+    // Accept the movies array in the initializer
+    init(movies: [Movie]) {
+        _viewModel = StateObject(wrappedValue: SelectedMoviesViewModel(movies: movies))
+    }
+
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .topTrailing) {
                 ScrollView {
                     LazyVStack(spacing: 16) {
                         // Display each movie card
-                        ForEach(sortedMovies, id: \.imdbID) { movie in
+                        ForEach(viewModel.sortedMovies, id: \.imdbID) { movie in
                             NavigationLink(destination: MovieDetailView(movie: movie)) {
                                 MovieCardView(
                                     movieTitle: movie.title,
@@ -36,62 +39,58 @@ struct SelectedMoviesView: View {
                 .navigationTitle("Available Options") // Title for the navigation bar
                 .navigationBarTitleDisplayMode(.large)
                 .navigationBarItems(trailing: Button(action: {
-                    showSortOptions.toggle() // Toggle sort options visibility
+                    viewModel.showSortOptions.toggle() // Toggle sort options visibility
                 }) {
                     Text("Sort")
                 })
-                .onAppear {
-                    sortedMovies = movies // Initialize sortedMovies with input movies
-                    refreshMovies() // Refresh movies based on sort order
-                }
-                
+
                 // Show sort options if toggle is true
-                if showSortOptions {
+                if viewModel.showSortOptions {
                     VStack(alignment: .trailing) {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Spacer()
                                 Button("Cancel") {
-                                    showSortOptions = false // Hide sort options
+                                    viewModel.showSortOptions = false // Hide sort options
                                 }
                                 .foregroundColor(.red)
                                 .padding(.trailing, 8)
                             }
-                            
+
                             // Sort buttons with actions
                             Button(action: {
-                                sortOrder = .titleAscending
-                                applySortAndHide() // Apply sorting and hide options
+                                viewModel.sortOrder = .titleAscending
+                                viewModel.applySortAndHide() // Apply sorting and hide options
                             }) {
                                 HStack {
                                     Text("Title Ascending")
                                     Text("↑")
                                 }
                             }
-                            
+
                             Button(action: {
-                                sortOrder = .titleDescending
-                                applySortAndHide()
+                                viewModel.sortOrder = .titleDescending
+                                viewModel.applySortAndHide()
                             }) {
                                 HStack {
                                     Text("Title Descending")
                                     Text("↓")
                                 }
                             }
-                            
+
                             Button(action: {
-                                sortOrder = .yearAscending
-                                applySortAndHide()
+                                viewModel.sortOrder = .yearAscending
+                                viewModel.applySortAndHide()
                             }) {
                                 HStack {
                                     Text("Year Ascending")
                                     Text("↑")
                                 }
                             }
-                            
+
                             Button(action: {
-                                sortOrder = .yearDescending
-                                applySortAndHide()
+                                viewModel.sortOrder = .yearDescending
+                                viewModel.applySortAndHide()
                             }) {
                                 HStack {
                                     Text("Year Descending")
@@ -111,26 +110,6 @@ struct SelectedMoviesView: View {
                 }
             }
         }
-    }
-    
-    // Refresh movie list based on current sort order
-    private func refreshMovies() {
-        switch sortOrder {
-        case .titleAscending:
-            sortedMovies = movies.sorted { $0.title < $1.title }
-        case .titleDescending:
-            sortedMovies = movies.sorted { $0.title > $1.title }
-        case .yearAscending:
-            sortedMovies = movies.sorted { $0.year < $1.year }
-        case .yearDescending:
-            sortedMovies = movies.sorted { $0.year > $1.year }
-        }
-    }
-
-    // Apply sorting and hide sort options
-    private func applySortAndHide() {
-        refreshMovies()
-        showSortOptions = false
     }
 }
 #Preview {
